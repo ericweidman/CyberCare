@@ -1,7 +1,10 @@
 package com.controllers;
 
+
+import com.entities.Customer;
 import com.services.CustomerRepository;
 import org.h2.tools.Server;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +37,20 @@ public class CyberCareController {
         dbui.stop();
     }
 
-    @RequestMapping(path = "/create-customer", method = RequestMethod.POST)
-    public void addCustomer(@RequestBody String json){
+    @RequestMapping(path = "/create-customer", method = RequestMethod.POST, consumes = "application/json")
+    public void addCustomer(@RequestBody String customer){
 
-        System.out.println(json);
+        JSONObject newCustomer = new JSONObject(customer);
+        String customerName = newCustomer.getString("name");
+        String customerEmail = newCustomer.getString("email");
+        String customerPhone = newCustomer.getString("phone");
+        String customerStreet = newCustomer.getString("street");
+        String customerCity = newCustomer.getString("city");
+        String customerState = newCustomer.getString("state");
+        String customerZip = newCustomer.getString("zip");
+        Customer newCustomerObject = new Customer(customerName, customerEmail, customerPhone, customerStreet, customerCity, customerState, customerZip);
+        customers.save(newCustomerObject);
+
     }
 
     @RequestMapping(path = "/get-customers", method = RequestMethod.GET)
