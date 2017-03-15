@@ -2,6 +2,8 @@ package com.controllers;
 
 
 import com.entities.Customer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.services.CustomerRepository;
 import org.h2.tools.Server;
 import org.json.JSONObject;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by ericweidman on 3/14/17.
@@ -38,7 +41,7 @@ public class CyberCareController {
     }
 
     @RequestMapping(path = "/create-customer", method = RequestMethod.POST, consumes = "application/json")
-    public void addCustomer(@RequestBody String customer){
+    public String addCustomer(@RequestBody String customer){
 
         JSONObject newCustomer = new JSONObject(customer);
         String customerName = newCustomer.getString("name");
@@ -51,12 +54,22 @@ public class CyberCareController {
         Customer newCustomerObject = new Customer(customerName, customerEmail, customerPhone, customerStreet, customerCity, customerState, customerZip);
         customers.save(newCustomerObject);
 
+        return customer;
+
     }
 
     @RequestMapping(path = "/get-customers", method = RequestMethod.GET)
-    public String customerList(){
+    public String customerList() throws JsonProcessingException {
 
-        return "customers";
+        List<Customer> customerList = (List<Customer>) customers.findAll();
+
+        com.fasterxml.jackson.databind.ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customerList);
+
+
+        System.out.println(json);
+
+       return json;
     }
 
     @RequestMapping(path = "/update-customer/{id}", method = RequestMethod.PUT)
