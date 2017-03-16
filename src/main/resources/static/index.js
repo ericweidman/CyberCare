@@ -3,13 +3,23 @@ $(document).ready(function() {
         url: '/get-customers',
         dataType: 'json',
         method: 'GET',
+
         success: function(response) {
 
             for (var i = 0; i < response.length; i++) {
-                var obj = response[i];
+
+                var singleCustomer = response[i];
+                var name = singleCustomer.name;
+                var email = singleCustomer.email;
+                var phone = singleCustomer.phone;
+                var street = singleCustomer.street;
+                var city = singleCustomer.city;
+                var state = singleCustomer.state;
+                var zip = singleCustomer.zip;
                 var table = document.getElementById("customerList");
                 var row = table.insertRow(0);
-                row.innerHTML = obj;
+                row.innerHTML = name + " " + email + " " + phone + " " + street + " " + city + " " + state + " " + zip;
+
             }
 
         },
