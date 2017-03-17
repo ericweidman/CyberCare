@@ -8,10 +8,7 @@ import com.services.CustomerRepository;
 import org.h2.tools.Server;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,9 +38,10 @@ public class CyberCareController {
     }
 
     @RequestMapping(path = "/create-customer", method = RequestMethod.POST, consumes = "application/json")
-    public String addCustomer(@RequestBody String customer){
+    public String addCustomer(@RequestBody String customer) {
 
         JSONObject newCustomer = new JSONObject(customer);
+        int id = newCustomer.getInt("id");
         String customerName = newCustomer.getString("name");
         String customerEmail = newCustomer.getString("email");
         String customerPhone = newCustomer.getString("phone");
@@ -51,7 +49,7 @@ public class CyberCareController {
         String customerCity = newCustomer.getString("city");
         String customerState = newCustomer.getString("state");
         String customerZip = newCustomer.getString("zip");
-        Customer newCustomerObject = new Customer(customerName, customerEmail, customerPhone, customerStreet, customerCity, customerState, customerZip);
+        Customer newCustomerObject = new Customer(id, customerName, customerEmail, customerPhone, customerStreet, customerCity, customerState, customerZip);
         customers.save(newCustomerObject);
 
         return customer;
@@ -62,28 +60,45 @@ public class CyberCareController {
     public String customerList() throws JsonProcessingException {
 
         List<Customer> customerList = (List<Customer>) customers.findAll();
-
         com.fasterxml.jackson.databind.ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customerList);
-
-
         System.out.println(json);
 
-       return json;
+        return json;
     }
 
-    @RequestMapping(path = "/update-customer/{id}", method = RequestMethod.PUT)
-    public void updateCustomer(@RequestBody String json){
+    @RequestMapping(path = "/update-customer", method = RequestMethod.PUT)
+    public void updateCustomer(@RequestBody String customer) {
 
-        System.out.println(json);
+        JSONObject newCustomer = new JSONObject(customer);
+        int id = newCustomer.getInt("updateNumber");
+        String customerName = newCustomer.getString("updatedName");
+        String customerEmail = newCustomer.getString("updatedEmail");
+        String customerPhone = newCustomer.getString("updatedPhone");
+        String customerStreet = newCustomer.getString("updatedStreet");
+        String customerCity = newCustomer.getString("updatedCity");
+        String customerState = newCustomer.getString("updatedState");
+        String customerZip = newCustomer.getString("updatedZip");
+
+        Customer oldCustomer = customers.findOne(id);
+        oldCustomer.setId(id);
+        oldCustomer.setName(customerName);
+        oldCustomer.setEmail(customerEmail);
+        oldCustomer.setPhone(customerPhone);
+        oldCustomer.setPhone(customerStreet);
+        oldCustomer.setCity(customerCity);
+        oldCustomer.setState(customerState);
+        oldCustomer.setZip(customerZip);
+
+        customers.save(oldCustomer);
+
     }
 
     @RequestMapping(path = "/delete-customer/{id}", method = RequestMethod.DELETE)
-    public void deleteCustomer(@RequestBody int id){
+    public void deleteCustomer(@PathVariable("id") int id) {
+
         customers.delete(id);
     }
-
-
 
 }
 

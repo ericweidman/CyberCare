@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @Column(nullable = false)
     int id;
 
     @Column(nullable = false)
@@ -36,10 +36,8 @@ public class Customer {
     String zip;
 
 
-    public Customer() {
-    }
-
-    public Customer(String name, String email, String phone, String street, String city, String state, String zip) {
+    public Customer(int id, String name, String email, String phone, String street, String city, String state, String zip) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -47,6 +45,17 @@ public class Customer {
         this.city = city;
         this.state = state;
         this.zip = zip;
+    }
+
+    public Customer() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
